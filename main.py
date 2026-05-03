@@ -16,7 +16,11 @@ def load_questions():
     """تحميل بنك الأسئلة من ملف JSON"""
     with open("data/questions.json", "r", encoding="utf-8") as f:
         return json.load(f)
-
+def load_questions():
+    with open("data/questions.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+        print("عدد الأسئلة:", len(data))
+        return data
 def load_student():
     """تحميل بيانات الطالب من ملف JSON"""
     with open("data/student.json", "r", encoding="utf-8") as f:
