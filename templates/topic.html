@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% block title %}{{ topic.name }} - رياضيات{% endblock %}
+
+{% block extra_style %}
+<style>
+.topic-header {
+    background: linear-gradient(135deg, {{ topic.color }}, {{ topic.color }}cc);
+    color: white;
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.topic-header-icon { font-size: 3rem; }
+.topic-header h1   { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+.topic-header p    { opacity: 0.85; font-size: 0.9rem; }
+.back-btn {
+    margin-right: auto;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.back-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* Questions list */
+.questions-list { display: flex; flex-direction: column; gap: 16px; }
+
+.question-card {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.07);
+    border: 2px solid #E5E7EB;
+    transition: border-color 0.2s;
+}
+.question-card.answered-correct { border-color: #10B981; background: #F0FDF4; }
+.question-card.answered-wrong   { border-color: #EF4444; background: #FEF2F2; }
+
+.q-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.q-number {
+    width: 32px; height: 32px;
+    background: {{ topic.color }};
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+.q-text {
+    font-size: 1rem;
+    font-weight: 700;
+    flex: 1;
+    line-height: 1.6;
+}
+
+/* Difficulty badge */
+.diff-badge-easy   { background:#D1FAE5; color:#065F46; }
+.diff-badge-medium { background:#FEF3C7; color:#92400E; }
+.diff-badge-hard   { background:#FEE2E2; color:#991B1B; }
+
+/* Choices */
+.choices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+.choice-btn {
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: right;
+    transition: all 0.2s;
+    color: #1F2937;
+    direction: rtl;
+}
+.choice-btn:hover:not(:disabled) {
+    background: #EDE9FE;
+    border-color: #7C3AED;
+    color: #5B21B6;
+}
+.choice-btn.correct  { background: #D1FAE5; border-color: #10B981; color: #065F46; }
+.choice-btn.wrong    { background: #FEE2E2; border-color: #EF4444; color: #991B1B; }
+.choice-btn:disabled { cursor: default; opacity: 0.8; }
+
+/* Feedback */
+.feedback-box {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.6;
+    display: none;
+}
+.feedback-correct { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
+.feedback-wrong   { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+
+/* Already done badge */
+.done-mark {
+    font-size: 1.2rem;
+    margin-right: auto;
+}
+
+/* Points popup */
+.points-popup {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(135deg, #7C3AED, #5B21B6);
+    color: white;
+    padding: 24px 40px;
+    border-radius: 24px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    box-shadow: 0 20px 60px rgba(124,58,237,0.4);
+    z-index: 9998;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    text-align: center;
+}
+.points-popup.show { transform: translate(-50%, -50%) scale(1); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Topic header -->
+<div class="topic-header">
+    <a href="/math" class="back-btn">← العودة</a>
+    <div class="topic-header-icon">{{ topic.icon }}</div>
+    <div>
+        <h1>{{ topic.name }}</h1>
+        <p>{{ topic.description }}</p>
+    </div>
+</div>
+
+<!-- Questions -->
+<div class="questions-list">
+{% for q in topic.questions %}
+{% set done = q.id in completed_ids %}
+{% set diff_class = 'diff-badge-easy' if q.difficulty == 'سهل' else ('diff-badge-medium' if q.difficulty == 'متوسط' else 'diff-badge-hard') %}
+<div class="question-card {% if done %}answered-correct{% endif %}" id="qcard-{{ q.id }}">
+    <div class="q-header">
+        <div class="q-number">{{ loop.index }}</div>
+        <div class="q-text">{{ q.question }}</div>
+        <span class="badge {{ diff_class }}">{{ q.difficulty }}</span>
+        {% if done %}<span class="done-mark" title="تم حلّه">✅</span>{% endif %}
+    </div>
+
+    <div class="choices-grid" id="choices-{{ q.id }}">
+        {% for ch in q.choices %}
+        <button class="choice-btn {% if done %}correct{% endif %}"
+                {% if done %}disabled{% endif %}
+                onclick="submitAnswer('{{ topic.id }}', {{ q.id }}, {{ loop.index0 }}, this)">
+            {{ ch }}
+        </button>
+        {% endfor %}
+    </div>
+
+    <div class="feedback-box" id="feedback-{{ q.id }}"
+         {% if done %}style="display:block" class="feedback-box feedback-correct"{% endif %}>
+        {% if done %}✅ لقد أجبت على هذا السؤال من قبل{% endif %}
+    </div>
+</div>
+{% endfor %}
+</div>
+
+<!-- Points popup -->
+<div class="points-popup" id="points-popup">⭐ +<span id="popup-pts">0</span> نقطة!</div>
+
+{% endblock %}
+
+{% block extra_script %}
+<script>
+const topicId = "{{ topic.id }}";
+
+function submitAnswer(topicId, questionId, selectedIndex, btn) {
+    const choicesDiv = document.getElementById('choices-' + questionId);
+    const btns = choicesDiv.querySelectorAll('.choice-btn');
+    btns.forEach(b => b.disabled = true);
+
+    fetch('/api/answer', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            topic_id: topicId,
+            question_id: questionId,
+            selected_index: selectedIndex
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const card = document.getElementById('qcard-' + questionId);
+        const feedback = document.getElementById('feedback-' + questionId);
+
+        // highlight correct / wrong choices
+        btns.forEach((b, i) => {
+            if (i === data.correct_index) b.classList.add('correct');
+            else if (i === selectedIndex && !data.correct) b.classList.add('wrong');
+        });
+
+        // card border
+        card.classList.add(data.correct ? 'answered-correct' : 'answered-wrong');
+
+        // feedback
+        feedback.style.display = 'block';
+        if (data.correct) {
+            feedback.className = 'feedback-box feedback-correct';
+            feedback.innerHTML = '✅ إجابة صحيحة! ' + data.explanation;
+        } else {
+            feedback.className = 'feedback-box feedback-wrong';
+            feedback.innerHTML = '❌ إجابة خاطئة. ' + data.explanation;
+        }
+
+        // points popup
+        if (data.points_earned > 0 && !data.already_done) {
+            showPointsPopup(data.points_earned);
+        }
+
+        // new badges
+        if (data.new_badges && data.new_badges.length > 0) {
+            data.new_badges.forEach(b => {
+                setTimeout(() => showToast('🏅 حصلت على وسام: ' + b, 'badge'), 800);
+            });
+        }
+    });
+}
+
+function showPointsPopup(pts) {
+    const popup = document.getElementById('points-popup');
+    document.getElementById('popup-pts').textContent = pts;
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 1800);
+}
+</script>
+{% endblock %}

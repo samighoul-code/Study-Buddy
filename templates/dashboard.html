@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+{% block title %}الرئيسية - رياضيات المتوسطة{% endblock %}
+
+{% block extra_style %}
+<style>
+.welcome-card {
+    background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 60%, #4C1D95 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 32px 28px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+.welcome-card::before {
+    content: '🎓';
+    position: absolute;
+    font-size: 120px;
+    left: -20px;
+    bottom: -20px;
+    opacity: 0.12;
+}
+.welcome-card h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+.welcome-card p  { opacity: 0.85; font-size: 1rem; }
+
+.name-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+.name-input {
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    width: 200px;
+}
+.name-input::placeholder { color: rgba(255,255,255,0.6); }
+.name-input:focus { border-color: rgba(255,255,255,0.8); }
+
+.level-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+.level-badge {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: white;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+.progress-wrap-white {
+    flex: 1;
+    min-width: 120px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+}
+.progress-fill-white {
+    height: 100%;
+    background: white;
+    border-radius: 999px;
+    transition: width 0.6s ease;
+}
+
+/* Stats grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid #E5E7EB;
+    transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-3px); }
+.stat-icon { font-size: 2rem; margin-bottom: 6px; }
+.stat-value { font-size: 1.7rem; font-weight: 800; }
+.stat-label { font-size: 0.82rem; color: #6B7280; margin-top: 2px; font-weight: 600; }
+
+/* Section cards */
+.section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+.section-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    border: 1px solid #E5E7EB;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.section-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+}
+.section-card-icon { font-size: 3rem; margin-bottom: 12px; }
+.section-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+.section-card p  { color: #6B7280; font-size: 0.9rem; line-height: 1.6; }
+.section-card-footer {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #F3F4F6;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Badges section */
+.badges-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.badge-chip {
+    background: linear-gradient(135deg, #EDE9FE, #DDD6FE);
+    color: #5B21B6;
+    border: 1px solid #C4B5FD;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+.empty-badges {
+    color: #9CA3AF;
+    font-size: 0.9rem;
+}
+
+/* Topics quick list */
+.topic-quick {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.topic-quick-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #F9FAFB;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s;
+}
+.topic-quick-row:hover { background: #EDE9FE; }
+.topic-quick-icon { font-size: 1.3rem; }
+.topic-quick-name { font-weight: 700; flex: 1; }
+.topic-quick-grade { color: #9CA3AF; font-size: 0.8rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Welcome Card -->
+<div class="welcome-card">
+    <p style="opacity:0.7; font-size:0.9rem; margin-bottom:4px;">مرحباً بك في منصة تعلم الرياضيات 🌟</p>
+    <h1>أهلاً، <span id="display-name">{{ student.name }}</span>!</h1>
+    <p>استمر في التعلم واكسب النقاط والأوسمة</p>
+
+    <div class="name-input-row">
+        <input class="name-input" id="name-input" type="text" placeholder="غيّر اسمك..." maxlength="30">
+        <button class="btn btn-secondary btn-sm" onclick="saveName()">💾 حفظ</button>
+    </div>
+
+    <div class="level-row">
+        <span class="level-badge">{{ level_info.title }}</span>
+        <div class="progress-wrap-white">
+            <div class="progress-fill-white" style="width: {{ progress_pct }}%"></div>
+        </div>
+        <span style="font-size:0.82rem; opacity:0.8;">
+            {% if level_info.next %}{{ student.points }}/{{ level_info.next }}{% else %}وصلت للقمة!{% endif %}
+        </span>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value" style="color:#7C3AED">{{ student.points }}</div>
+        <div class="stat-label">مجموع النقاط</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📚</div>
+        <div class="stat-value" style="color:#059669">{{ student.completed_exercises|length }}</div>
+        <div class="stat-label">تمارين مكتملة</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-value" style="color:#D97706">{{ student.badges|length }}</div>
+        <div class="stat-label">الأوسمة</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value" style="color:#3B82F6">{{ tasks_done }}</div>
+        <div class="stat-label">مهام مكتملة</div>
+    </div>
+</div>
+
+<!-- Main Sections -->
+<div class="section-title">📌 الأقسام الرئيسية</div>
+<div class="section-grid">
+    <!-- Math Section -->
+    <a href="/math" class="section-card">
+        <div class="section-card-icon">📐</div>
+        <h3>تعلم الرياضيات</h3>
+        <p>اختر موضوعاً وحل التمارين واكسب النقاط في كل إجابة صحيحة</p>
+        <div class="section-card-footer" style="color:#7C3AED">
+            {{ total_topics }} موضوع متاح ←
+        </div>
+    </a>
+    <!-- Tasks Section -->
+    <a href="/tasks" class="section-card">
+        <div class="section-card-icon">📋</div>
+        <h3>إدارة مهامي</h3>
+        <p>أضف واجباتك ومهامك ورتبها حسب الأولوية وتابع تقدمك</p>
+        <div class="section-card-footer" style="color:#059669">
+            {{ tasks_todo }} مهمة قيد الانتظار
+            {% if tasks_progress > 0 %} · {{ tasks_progress }} قيد التنفيذ{% endif %} ←
+        </div>
+    </a>
+</div>
+
+<!-- Two column: badges + topics -->
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:18px;">
+
+    <!-- Badges -->
+    <div class="card">
+        <div class="section-title">🏅 أوسمتي</div>
+        {% if student.badges %}
+        <div class="badges-list">
+            {% for b in student.badges %}
+            <span class="badge-chip">{{ b.name }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-badges">لا توجد أوسمة بعد. حل التمارين واكسب أوسمتك! 🌱</p>
+        {% endif %}
+    </div>
+
+    <!-- Quick Topics -->
+    <div class="card">
+        <div class="section-title">📖 المواضيع</div>
+        <div class="topic-quick">
+            {% for t in topics %}
+            <a href="/topic/{{ t.id }}" class="topic-quick-row">
+                <span class="topic-quick-icon">{{ t.icon }}</span>
+                <span class="topic-quick-name">{{ t.name }}</span>
+                <span class="topic-quick-grade">{{ t.grade }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Motivational message -->
+<div style="text-align:center; margin-top:28px; padding:20px; background:white; border-radius:16px; box-shadow:var(--shadow);">
+    {% set msgs = [
+        "العلم نور والجهل ظلام، استمر في التعلم! 💡",
+        "كل تمرين تحله يقربك من النجاح ⭐",
+        "الرياضيات سهلة إذا مارستها كل يوم 💪",
+        "أنت قادر على تحقيق أي هدف تضعه لنفسك 🚀",
+        "لا تستسلم، كل خطأ هو درس جديد 🌱"
+    ] %}
+    {% set idx = student.points % 5 %}
+    <p style="font-size:1.05rem; font-weight:700; color:#7C3AED;">{{ msgs[idx] }}</p>
+</div>
+
+{% endblock %}
+
+{% block extra_script %}
+<script>
+function saveName() {
+    const val = document.getElementById('name-input').value.trim();
+    if (!val) return;
+    fetch('/api/student/name', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({name: val})
+    }).then(r => r.json()).then(d => {
+        if (d.success) {
+            document.getElementById('display-name').textContent = val;
+            document.getElementById('name-input').value = '';
+            showToast('تم حفظ الاسم! ✅', 'success');
+        }
+    });
+}
+document.getElementById('name-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveName();
+});
+</script>
+{% endblock %}

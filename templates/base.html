@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}منصة الرياضيات{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary:   #7C3AED;
+            --secondary: #F59E0B;
+            --success:   #10B981;
+            --danger:    #EF4444;
+            --info:      #3B82F6;
+            --bg:        #F5F3FF;
+            --card:      #FFFFFF;
+            --text:      #1F2937;
+            --muted:     #6B7280;
+            --border:    #E5E7EB;
+            --radius:    16px;
+            --shadow:    0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        /* ---- Navigation ---- */
+        .navbar {
+            background: linear-gradient(135deg, #7C3AED, #5B21B6);
+            color: white;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            box-shadow: 0 2px 12px rgba(124,58,237,0.3);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .navbar-brand {
+            font-size: 1.3rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+        }
+        .navbar-nav {
+            display: flex;
+            gap: 4px;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* ---- Points badge in navbar ---- */
+        .points-badge {
+            background: var(--secondary);
+            color: #1F2937;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* ---- Page wrapper ---- */
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+        }
+
+        /* ---- Cards ---- */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        /* ---- Buttons ---- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+        }
+        .btn:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+        .btn:active { transform: translateY(0); }
+        .btn-primary   { background: var(--primary);   color: white; }
+        .btn-secondary { background: var(--secondary); color: #1F2937; }
+        .btn-success   { background: var(--success);   color: white; }
+        .btn-danger    { background: var(--danger);    color: white; }
+        .btn-outline   { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-sm        { padding: 6px 14px; font-size: 0.85rem; }
+        .btn-lg        { padding: 14px 32px; font-size: 1.1rem; }
+
+        /* ---- Progress bar ---- */
+        .progress-bar-wrap {
+            background: #E5E7EB;
+            border-radius: 999px;
+            height: 12px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--primary), #A855F7);
+            transition: width 0.5s ease;
+        }
+
+        /* ---- Badge pill ---- */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .badge-purple { background: #EDE9FE; color: #6D28D9; }
+        .badge-green  { background: #D1FAE5; color: #065F46; }
+        .badge-orange { background: #FEF3C7; color: #92400E; }
+        .badge-red    { background: #FEE2E2; color: #991B1B; }
+        .badge-blue   { background: #DBEAFE; color: #1E40AF; }
+
+        /* ---- Section title ---- */
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        /* ---- Toast notification ---- */
+        #toast-container {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            background: #1F2937;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+            animation: slideDown 0.3s ease, fadeOut 0.4s ease 2.6s forwards;
+        }
+        .toast-success { background: #065F46; }
+        .toast-badge   { background: linear-gradient(135deg, #7C3AED, #F59E0B); }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 640px) {
+            .navbar { padding: 0 16px; }
+            .nav-link span.label { display: none; }
+            .page { padding: 16px 12px 40px; }
+        }
+    </style>
+    {% block extra_style %}{% endblock %}
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">🎓 رياضيات المتوسطة</a>
+    <div class="navbar-nav">
+        <a href="/"      class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">🏠 <span class="label">الرئيسية</span></a>
+        <a href="/math"  class="nav-link {% if request.endpoint in ['math','topic'] %}active{% endif %}">📐 <span class="label">الرياضيات</span></a>
+        <a href="/tasks" class="nav-link {% if request.endpoint == 'tasks' %}active{% endif %}">📋 <span class="label">مهامي</span></a>
+    </div>
+    {% if student is defined %}
+    <div class="points-badge">⭐ {{ student.points }} نقطة</div>
+    {% endif %}
+</nav>
+
+<div id="toast-container"></div>
+
+<div class="page">
+    {% block content %}{% endblock %}
+</div>
+
+<script>
+function showToast(msg, type = '') {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast' + (type ? ' toast-' + type : '');
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+</script>
+{% block extra_script %}{% endblock %}
+</body>
+</html>

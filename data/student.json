@@ -1,0 +1,21 @@
+{
+  "name": "سامي",
+  "points": 10,
+  "level": 1,
+  "completed_exercises": [
+    {
+      "topic_id": "quadratic_functions",
+      "question_id": 1,
+      "correct": true,
+      "timestamp": "2026-05-03T03:21:14.502921"
+    }
+  ],
+  "badges": [
+    {
+      "id": "first_exercise",
+      "name": "أول تمرين 🌟"
+    }
+  ],
+  "tasks": [],
+  "topic_progress": {}
+}

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}تعلم الرياضيات{% endblock %}
+
+{% block extra_style %}
+<style>
+.page-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+.page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1F2937;
+    margin-bottom: 6px;
+}
+.page-header p { color: #6B7280; font-size: 0.95rem; }
+
+.topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.topic-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    border: 1px solid #E5E7EB;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+.topic-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+.topic-card-accent {
+    position: absolute;
+    top: 0; right: 0;
+    width: 6px;
+    height: 100%;
+    border-radius: 0 20px 20px 0;
+}
+.topic-icon  { font-size: 2.5rem; margin-bottom: 12px; }
+.topic-name  { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+.topic-grade { font-size: 0.82rem; color: #9CA3AF; margin-bottom: 10px; }
+.topic-desc  { font-size: 0.88rem; color: #6B7280; line-height: 1.6; margin-bottom: 14px; }
+
+.topic-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid #F3F4F6;
+}
+.topic-progress-mini {
+    flex: 1;
+    margin-left: 10px;
+}
+.topic-progress-text {
+    font-size: 0.82rem;
+    color: #9CA3AF;
+    margin-bottom: 4px;
+}
+.mini-bar-wrap {
+    background: #E5E7EB;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+}
+.mini-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.5s;
+}
+.topic-q-count {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #6B7280;
+    white-space: nowrap;
+}
+
+/* Difficulty legend */
+.diff-legend {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.diff-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.82rem;
+    color: #6B7280;
+}
+.diff-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>📐 تعلم الرياضيات</h1>
+    <p>اختر موضوعاً لتبدأ بالتمارين واكسب النقاط</p>
+</div>
+
+<div class="diff-legend">
+    <span style="font-weight:700; color:#1F2937;">مستويات الصعوبة:</span>
+    <div class="diff-item"><span class="diff-dot" style="background:#10B981"></span> سهل (+10 نقاط)</div>
+    <div class="diff-item"><span class="diff-dot" style="background:#F59E0B"></span> متوسط (+20 نقطة)</div>
+    <div class="diff-item"><span class="diff-dot" style="background:#EF4444"></span> صعب (+30 نقطة)</div>
+</div>
+
+<div class="topics-grid">
+{% for t in topics %}
+{% set stat = topic_stats[t.id] %}
+{% set pct  = ((stat.done / stat.total) * 100)|int if stat.total > 0 else 0 %}
+<a href="/topic/{{ t.id }}" class="topic-card">
+    <div class="topic-card-accent" style="background:{{ t.color }}"></div>
+    <div class="topic-icon">{{ t.icon }}</div>
+    <div class="topic-name">{{ t.name }}</div>
+    <div class="topic-grade">
+        <span class="badge badge-purple">{{ t.grade }}</span>
+    </div>
+    <div class="topic-desc">{{ t.description }}</div>
+    <div class="topic-footer">
+        <div class="topic-progress-mini">
+            <div class="topic-progress-text">{{ stat.done }}/{{ stat.total }} تمرين مكتمل</div>
+            <div class="mini-bar-wrap">
+                <div class="mini-bar-fill" style="width:{{ pct }}%; background:{{ t.color }}"></div>
+            </div>
+        </div>
+        <div class="topic-q-count" style="color:{{ t.color }}">
+            {% if pct == 100 %}✅ مكتمل{% else %}← ابدأ{% endif %}
+        </div>
+    </div>
+</a>
+{% endfor %}
+</div>
+
+{% endblock %}

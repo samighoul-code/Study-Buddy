@@ -1,0 +1,86 @@
+Create a web application for middle school students that combines learning math with task/time management.
+
+Project idea:
+The app is an educational platform for grades 7–9. In the future, it should be expandable to elementary and high school students.
+
+Visual style:
+Use the colors, logo style, and design inspiration from this Canva presentation:
+https://canva.link/hdg05cjyd9e6l8l
+
+Important:
+If you cannot access the Canva link directly, create a modern, friendly, colorful educational design with:
+- Soft rounded cards
+- Student-friendly icons
+- Gamified progress
+- Clean dashboard
+- Arabic RTL support
+- Warm educational colors
+- A professional but fun look
+
+Content:
+Use the attached PDF question bank as the math exercise database. The file includes topics such as quadratic functions, equations, transformations, systems of equations, and quadratic inequalities.
+
+Build the app with the following features:
+
+1. Home / Dashboard screen
+- Welcome message for the student
+- Two main sections:
+  a. Learn Math
+  b. My Tasks
+- Show student progress with points, level, and completed exercises
+
+2. Learn Math screen
+- Display math topics from the attached PDF
+- Allow students to choose a topic
+- Show exercises by topic and difficulty
+- Each exercise should include:
+  - Question text
+  - Answer input
+  - Check answer button
+  - Feedback message
+  - Short explanation area
+
+3. Tasks / Time Management screen
+- Allow students to add tasks:
+  - Task title
+  - Subject
+  - Due date
+  - Priority
+- Display tasks in a clear list
+- Add status: To Do, In Progress, Done
+- Show weekly progress
+
+4. Gamification
+- Give points for solved exercises
+- Give badges for completing tasks
+- Show progress bar
+- Add simple motivational messages in Arabic
+
+5. Arabic support
+- The user interface should be in Arabic
+- Use RTL layout
+- Use clear Arabic labels
+- Keep the language simple for middle school students
+
+6. Data
+- Create a sample database or JSON file based on the attached question bank
+- Organize questions by:
+  - Topic
+  - Difficulty
+  - Question
+  - Correct answer
+  - Explanation
+
+7. Technical requirements
+- Use Python if possible
+- Prefer Flask or Streamlit for a simple web app
+- Keep the code clean and easy for students to understand
+- Add comments in the code
+- Make the project easy to run in Replit
+
+Deliverables:
+- Full working app
+- Clear file structure
+- README explaining how to run the project
+- Sample questions from the attached PDF
+- Easy design that students can improve later

@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+{% block title %}مهامي - رياضيات المتوسطة{% endblock %}
+
+{% block extra_style %}
+<style>
+.tasks-header {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    border-radius: 20px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.tasks-header h1 { font-size: 1.5rem; font-weight: 800; }
+.tasks-header p  { opacity: 0.85; font-size: 0.9rem; margin-top: 4px; }
+
+/* Stats mini */
+.tasks-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+.task-stat {
+    flex: 1;
+    min-width: 100px;
+    background: white;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border: 1px solid #E5E7EB;
+}
+.task-stat-num   { font-size: 1.6rem; font-weight: 800; }
+.task-stat-label { font-size: 0.8rem; color: #6B7280; font-weight: 600; margin-top: 2px; }
+
+/* Add form */
+.add-task-card {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.07);
+    margin-bottom: 24px;
+    border: 1px solid #E5E7EB;
+}
+.add-task-card h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: #1F2937;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 0.82rem; font-weight: 700; color: #374151; }
+.form-control {
+    padding: 10px 14px;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    color: #1F2937;
+    outline: none;
+    transition: border-color 0.2s;
+    direction: rtl;
+    background: #F9FAFB;
+}
+.form-control:focus { border-color: #7C3AED; background: white; }
+.form-control-full { width: 100%; }
+
+/* Tasks list */
+.tasks-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+}
+.task-column { display: flex; flex-direction: column; gap: 10px; }
+.column-title {
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.col-todo     { background: #FEF3C7; color: #92400E; }
+.col-progress { background: #DBEAFE; color: #1E40AF; }
+.col-done     { background: #D1FAE5; color: #065F46; }
+
+/* Task card */
+.task-item {
+    background: white;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #E5E7EB;
+    transition: box-shadow 0.2s;
+}
+.task-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+.task-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #1F2937;
+}
+.task-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.task-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.task-btn {
+    padding: 5px 12px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.task-btn:hover { opacity: 0.8; }
+.btn-start    { background: #DBEAFE; color: #1E40AF; }
+.btn-complete { background: #D1FAE5; color: #065F46; }
+.btn-undo     { background: #FEF3C7; color: #92400E; }
+.btn-delete   { background: #FEE2E2; color: #991B1B; }
+
+/* Priority colors */
+.pri-high   { background: #FEE2E2; color: #991B1B; }
+.pri-medium { background: #FEF3C7; color: #92400E; }
+.pri-low    { background: #D1FAE5; color: #065F46; }
+
+.empty-col {
+    text-align: center;
+    padding: 24px;
+    color: #9CA3AF;
+    font-size: 0.88rem;
+    background: #F9FAFB;
+    border-radius: 12px;
+    border: 2px dashed #E5E7EB;
+}
+
+/* Weekly progress */
+.week-progress {
+    margin-top: 24px;
+    background: white;
+    border-radius: 18px;
+    padding: 20px 24px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.07);
+}
+.week-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.week-label { font-size: 0.85rem; font-weight: 700; width: 80px; color: #374151; }
+.week-bar-wrap { flex: 1; background: #F3F4F6; border-radius: 999px; height: 14px; overflow: hidden; }
+.week-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #059669, #34D399); }
+.week-num { font-size: 0.82rem; font-weight: 700; color: #6B7280; width: 30px; text-align: left; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="tasks-header">
+    <div>
+        <h1>📋 إدارة مهامي</h1>
+        <p>نظّم واجباتك ومهامك بسهولة</p>
+    </div>
+</div>
+
+<!-- Stats -->
+{% set todo_tasks     = tasks | selectattr('status', 'equalto', 'todo')        | list %}
+{% set progress_tasks = tasks | selectattr('status', 'equalto', 'in_progress') | list %}
+{% set done_tasks     = tasks | selectattr('status', 'equalto', 'done')        | list %}
+
+<div class="tasks-stats">
+    <div class="task-stat">
+        <div class="task-stat-num" style="color:#D97706">{{ todo_tasks|length }}</div>
+        <div class="task-stat-label">قيد الانتظار</div>
+    </div>
+    <div class="task-stat">
+        <div class="task-stat-num" style="color:#3B82F6">{{ progress_tasks|length }}</div>
+        <div class="task-stat-label">قيد التنفيذ</div>
+    </div>
+    <div class="task-stat">
+        <div class="task-stat-num" style="color:#059669">{{ done_tasks|length }}</div>
+        <div class="task-stat-label">مكتملة</div>
+    </div>
+    <div class="task-stat">
+        <div class="task-stat-num" style="color:#7C3AED">{{ tasks|length }}</div>
+        <div class="task-stat-label">المجموع</div>
+    </div>
+</div>
+
+<!-- Add Task Form -->
+<div class="add-task-card">
+    <h3>➕ إضافة مهمة جديدة</h3>
+    <div class="form-grid">
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label>عنوان المهمة *</label>
+            <input class="form-control" id="task-title" type="text" placeholder="مثال: حل تمارين الرياضيات" maxlength="80">
+        </div>
+        <div class="form-group">
+            <label>المادة</label>
+            <select class="form-control" id="task-subject">
+                <option value="رياضيات">رياضيات</option>
+                <option value="علوم">علوم</option>
+                <option value="عربي">لغة عربية</option>
+                <option value="إنجليزي">إنجليزي</option>
+                <option value="دين">تربية إسلامية</option>
+                <option value="تاريخ">تاريخ وجغرافيا</option>
+                <option value="عام">عام</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>تاريخ التسليم</label>
+            <input class="form-control" id="task-due" type="date">
+        </div>
+        <div class="form-group">
+            <label>الأولوية</label>
+            <select class="form-control" id="task-priority">
+                <option value="عالية">🔴 عالية</option>
+                <option value="متوسطة" selected>🟡 متوسطة</option>
+                <option value="منخفضة">🟢 منخفضة</option>
+            </select>
+        </div>
+    </div>
+    <button class="btn btn-success" onclick="addTask()">➕ إضافة المهمة</button>
+</div>
+
+<!-- Tasks Board -->
+<div class="tasks-columns" id="tasks-board">
+
+    <!-- To Do -->
+    <div class="task-column">
+        <div class="column-title col-todo">⏳ قيد الانتظار <span style="margin-right:auto;font-size:0.82rem;">{{ todo_tasks|length }}</span></div>
+        {% if todo_tasks %}
+            {% for t in todo_tasks %}{{ task_card(t) }}{% endfor %}
+        {% else %}
+            <div class="empty-col">لا توجد مهام قيد الانتظار 🎉</div>
+        {% endif %}
+    </div>
+
+    <!-- In Progress -->
+    <div class="task-column">
+        <div class="column-title col-progress">🔄 قيد التنفيذ <span style="margin-right:auto;font-size:0.82rem;">{{ progress_tasks|length }}</span></div>
+        {% if progress_tasks %}
+            {% for t in progress_tasks %}{{ task_card(t) }}{% endfor %}
+        {% else %}
+            <div class="empty-col">لا توجد مهام قيد التنفيذ</div>
+        {% endif %}
+    </div>
+
+    <!-- Done -->
+    <div class="task-column">
+        <div class="column-title col-done">✅ مكتملة <span style="margin-right:auto;font-size:0.82rem;">{{ done_tasks|length }}</span></div>
+        {% if done_tasks %}
+            {% for t in done_tasks %}{{ task_card(t) }}{% endfor %}
+        {% else %}
+            <div class="empty-col">أكمل أول مهمة لتظهر هنا!</div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Weekly progress -->
+{% if tasks|length > 0 %}
+<div class="week-progress">
+    <div class="section-title">📊 نسبة الإنجاز</div>
+    {% set total_t = tasks|length %}
+    {% set pct_done = ((done_tasks|length / total_t) * 100)|int if total_t > 0 else 0 %}
+    {% set pct_prog = ((progress_tasks|length / total_t) * 100)|int if total_t > 0 else 0 %}
+    <div class="week-bar-row">
+        <span class="week-label">مكتملة</span>
+        <div class="week-bar-wrap"><div class="week-bar-fill" style="width:{{ pct_done }}%; background:linear-gradient(90deg,#059669,#34D399)"></div></div>
+        <span class="week-num">{{ done_tasks|length }}</span>
+    </div>
+    <div class="week-bar-row">
+        <span class="week-label">قيد التنفيذ</span>
+        <div class="week-bar-wrap"><div class="week-bar-fill" style="width:{{ pct_prog }}%; background:linear-gradient(90deg,#3B82F6,#60A5FA)"></div></div>
+        <span class="week-num">{{ progress_tasks|length }}</span>
+    </div>
+    <div class="week-bar-row">
+        <span class="week-label">الانتظار</span>
+        <div class="week-bar-wrap">
+            {% set pct_todo = ((todo_tasks|length / total_t) * 100)|int %}
+            <div class="week-bar-fill" style="width:{{ pct_todo }}%; background:linear-gradient(90deg,#F59E0B,#FCD34D)"></div>
+        </div>
+        <span class="week-num">{{ todo_tasks|length }}</span>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% macro task_card(t) %}
+{% set pri_class = 'pri-high' if t.priority == 'عالية' else ('pri-medium' if t.priority == 'متوسطة' else 'pri-low') %}
+<div class="task-item" id="task-{{ t.id }}">
+    <div class="task-title">{{ t.title }}</div>
+    <div class="task-meta">
+        <span class="badge badge-blue">{{ t.subject }}</span>
+        <span class="badge {{ pri_class }}">{{ t.priority }}</span>
+        {% if t.due_date %}<span class="badge badge-purple">📅 {{ t.due_date }}</span>{% endif %}
+    </div>
+    <div class="task-actions">
+        {% if t.status == 'todo' %}
+            <button class="task-btn btn-start"    onclick="updateTask({{ t.id }}, 'in_progress')">▶️ ابدأ</button>
+            <button class="task-btn btn-complete" onclick="updateTask({{ t.id }}, 'done')">✅ أنهِ</button>
+        {% elif t.status == 'in_progress' %}
+            <button class="task-btn btn-complete" onclick="updateTask({{ t.id }}, 'done')">✅ أنهِ</button>
+            <button class="task-btn btn-undo"     onclick="updateTask({{ t.id }}, 'todo')">↩️ أعد</button>
+        {% else %}
+            <button class="task-btn btn-undo"     onclick="updateTask({{ t.id }}, 'in_progress')">↩️ أعد فتح</button>
+        {% endif %}
+        <button class="task-btn btn-delete" onclick="deleteTask({{ t.id }})">🗑️ حذف</button>
+    </div>
+</div>
+{% endmacro %}
+
+{% block extra_script %}
+<script>
+function addTask() {
+    const title = document.getElementById('task-title').value.trim();
+    if (!title) { showToast('الرجاء كتابة عنوان المهمة', ''); return; }
+
+    fetch('/api/tasks/add', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+            title:    title,
+            subject:  document.getElementById('task-subject').value,
+            due_date: document.getElementById('task-due').value,
+            priority: document.getElementById('task-priority').value,
+        })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            showToast('تمت إضافة المهمة ✅', 'success');
+            setTimeout(() => location.reload(), 800);
+        }
+    });
+}
+
+function updateTask(id, status) {
+    fetch('/api/tasks/update', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({id: id, status: status})
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.new_badges && d.new_badges.length > 0) {
+            d.new_badges.forEach(b => showToast('🏅 وسام جديد: ' + b, 'badge'));
+        }
+        setTimeout(() => location.reload(), 600);
+    });
+}
+
+function deleteTask(id) {
+    if (!confirm('هل تريد حذف هذه المهمة؟')) return;
+    fetch('/api/tasks/delete', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({id: id})
+    })
+    .then(r => r.json())
+    .then(() => {
+        showToast('تم حذف المهمة', '');
+        setTimeout(() => location.reload(), 600);
+    });
+}
+</script>
+{% endblock %}
